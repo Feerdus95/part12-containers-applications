@@ -95,12 +95,16 @@ part12-containers-applications/
 │   ├── exercise12_3.txt
 │   └── exercise12_4.txt
 └── todo-app/             # Todo application
-    └── todo-backend/     # Backend service
-        ├── Dockerfile    # Backend Docker configuration
-        ├── docker-compose.yml
-        ├── docker-compose.dev.yml
-        ├── mongo/        # MongoDB configuration
-        └── redis/        # Redis configuration
+    ├── todo-backend/     # Backend service
+    │   ├── Dockerfile    # Backend Docker configuration
+    │   ├── docker-compose.yml
+    │   ├── mongo/        # MongoDB configuration
+    │   └── redis/        # Redis configuration
+    └── todo-frontend/    # Frontend application
+        ├── Dockerfile    # Frontend Docker configuration
+        ├── src/          # React source code
+        ├── public/       # Static files
+        └── tests/        # Test files
 ```
 
 ## Prerequisites
@@ -112,23 +116,60 @@ part12-containers-applications/
 ## Getting Started
 
 1. Clone this repository
-2. Navigate to the todo-backend directory:
    ```bash
-   cd part12-containers-applications/todo-app/todo-backend
+   git clone https://github.com/Feerdus95/part12-containers-applications.git
+   cd part12-containers-applications/todo-app
    ```
-3. Start the development environment:
+
+2. Start the application with Docker Compose:
    ```bash
-   docker compose -f docker-compose.dev.yml up -d
+   docker-compose up --build
    ```
-4. The application will be available at http://localhost:3000
+
+3. Access the application:
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:3001
+   - MongoDB: localhost:27017
+   - Redis: localhost:6379
+
+4. To run tests:
+   ```bash
+   # For frontend tests
+   cd todo-frontend
+   npm test
+   
+   # Or run tests during Docker build:
+   docker-compose up --build
+   ```
 
 ## API Endpoints
 
 ### Todo API
 - `GET /todos` - Get all todos
 - `POST /todos` - Create a new todo
+  ```json
+  {
+    "text": "Todo text",
+    "done": false
+  }
+  ```
 - `GET /todos/:id` - Get a specific todo
 - `PUT /todos/:id` - Update a todo
+  ```json
+  {
+    "text": "Updated text",
+    "done": true
+  }
+  ```
+- `DELETE /todos/:id` - Delete a todo
+
+### Statistics
+- `GET /statistics` - Get todo statistics (uses Redis)
+  ```json
+  {
+    "added_todos": 5
+  }
+  ```
 - `DELETE /todos/:id` - Delete a todo
 
 ### Statistics
