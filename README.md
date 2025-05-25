@@ -72,6 +72,12 @@ This part covers:
 - Verified data survives container restarts
 - Set up proper volume configuration
 
+### Exercise 12.13: Todo application frontend
+- Containerized the React frontend with Docker
+- Configured Nginx to serve the frontend and proxy API requests
+- Set up environment variables for backend URL configuration
+- Integrated frontend with the containerized backend service
+
 ## Project Structure
 
 ```

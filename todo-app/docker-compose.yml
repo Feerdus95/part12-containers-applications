@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./todo-frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_BACKEND_URL=/api
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_BACKEND_URL=/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./todo-backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGO_URL=mongodb://the_username:the_password@mongo:27017/the_database
+      - REDIS_URL=redis://redis:6379
+      - PORT=3001
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:4.4
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=the_username
+      - MONGO_INITDB_ROOT_PASSWORD=the_password
+      - MONGO_INITDB_DATABASE=the_database
+    volumes:
+      - mongodb_data:/data/db
+      - ./todo-backend/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "26379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongodb_data:
+  redis_data:
