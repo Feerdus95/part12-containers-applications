@@ -85,6 +85,15 @@ This part covers:
 - Fixed todo toggle functionality (done/undone)
 - Added proper prop types and error handling
 
+### Exercise 12.15: Development Environment Setup
+- Created `docker-compose.dev.yml` for development with hot-reloading
+- Configured volume mounts for live code updates
+- Set up proper CORS and CSP headers
+- Added debug-helper service for testing container connectivity
+- Implemented development-specific Dockerfile with dev server
+- Configured Vite proxy for API requests in development
+- Added proper networking between containers
+
 ## Project Structure
 
 ```
@@ -115,6 +124,8 @@ part12-containers-applications/
 
 ## Getting Started
 
+### Production
+
 1. Clone this repository
    ```bash
    git clone https://github.com/Feerdus95/part12-containers-applications.git
@@ -132,15 +143,33 @@ part12-containers-applications/
    - MongoDB: localhost:27017
    - Redis: localhost:6379
 
-4. To run tests:
+### Development
+
+1. Start the development environment:
    ```bash
-   # For frontend tests
-   cd todo-frontend
-   npm test
-   
-   # Or run tests during Docker build:
-   docker-compose up --build
+   docker-compose -f docker-compose.dev.yml up --build
    ```
+
+2. The development environment includes:
+   - Frontend with hot-reloading: http://localhost:3000
+   - Backend API: http://localhost:3001
+   - Debug helper for testing connectivity between services
+
+### Testing
+
+To run tests:
+```bash
+# For frontend tests
+cd todo-frontend
+npm test
+
+# Or run tests during Docker build:
+docker-compose up --build
+
+# For development testing with watch mode
+cd todo-frontend
+npm run test:watch
+```
 
 ## API Endpoints
 

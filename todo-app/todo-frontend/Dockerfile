@@ -1,5 +1,5 @@
-# Test stage
-FROM node:20 AS test
+# Development stage
+FROM node:20 AS development
 WORKDIR /app
 
 # Copy package files
@@ -8,12 +8,20 @@ COPY jest.config.js ./
 COPY babel.config.js ./
 COPY jest.setup.js ./
 
-# Install dependencies including devDependencies for testing
+# Install all dependencies including devDependencies
 RUN npm ci
 
 # Copy source code
 COPY . .
 
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Default command
+CMD ["npm", "run", "dev"]
+
+# Test stage
+FROM development AS test
 # Run tests
 RUN npm test
 
