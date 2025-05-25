@@ -78,6 +78,13 @@ This part covers:
 - Set up environment variables for backend URL configuration
 - Integrated frontend with the containerized backend service
 
+### Exercise 12.14: Frontend testing
+- Extracted Todo component into a separate file
+- Implemented comprehensive tests using Jest and React Testing Library
+- Updated Dockerfile to run tests during build
+- Fixed todo toggle functionality (done/undone)
+- Added proper prop types and error handling
+
 ## Project Structure
 
 ```

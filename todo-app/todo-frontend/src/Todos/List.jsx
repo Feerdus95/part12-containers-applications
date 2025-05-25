@@ -1,49 +1,31 @@
-import React from 'react'
+import Todo from '../components/Todo';
 
 const TodoList = ({ todos, deleteTodo, completeTodo }) => {
-  const onClickDelete = (todo) => () => {
-    deleteTodo(todo)
-  }
-
-  const onClickComplete = (todo) => () => {
-    completeTodo(todo)
-  }
+  const handleToggle = (todo) => {
+    // Toggle the todo's done state
+    completeTodo(todo);
+  };
 
   return (
-    <>
-      {todos.map(todo => {
-        const doneInfo = (
-          <>
-            <span>This todo is done</span>
-            <span>
-              <button onClick={onClickDelete(todo)}> Delete </button>
-            </span>
-          </>
-        )
+    <div data-testid="todo-list">
+      {todos.map((todo, index) => (
+        <div key={todo._id || index} style={{ margin: '10px 0' }}>
+          <Todo 
+            todo={todo} 
+            onToggle={() => handleToggle(todo)} 
+          />
+          <button 
+            onClick={() => deleteTodo(todo)}
+            style={{ marginLeft: '10px' }}
+            data-testid="delete-button"
+          >
+            Delete
+          </button>
+          {index < todos.length - 1 && <hr />}
+        </div>
+      ))}
+    </div>
+  );
+};
 
-        const notDoneInfo = (
-          <>
-            <span>
-              This todo is not done
-            </span>
-            <span>
-              <button onClick={onClickDelete(todo)}> Delete </button>
-              <button onClick={onClickComplete(todo)}> Set as done </button>
-            </span>
-          </>
-        )
-
-        return (
-          <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '70%', margin: 'auto' }}>
-            <span>
-              {todo.text} 
-            </span>
-            {todo.done ? doneInfo : notDoneInfo}
-          </div>
-        )
-      }).reduce((acc, cur) => [...acc, <hr />, cur], [])}
-    </>
-  )
-}
-
-export default TodoList
+export default TodoList;

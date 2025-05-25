@@ -1,3 +1,22 @@
+# Test stage
+FROM node:20 AS test
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY jest.config.js ./
+COPY babel.config.js ./
+COPY jest.setup.js ./
+
+# Install dependencies including devDependencies for testing
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Run tests
+RUN npm test
+
 # Build stage
 FROM node:20 AS build
 
@@ -6,7 +25,7 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install all dependencies including devDependencies for building
 RUN npm ci
 
 # Copy source code
