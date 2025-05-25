@@ -1,0 +1,6 @@
+docker container ls -a
+docker start -i 3d4752b3f1c20905aa096bdd8709e36ca8f68b8697a6056bf8660bb02310d122
+apt-get update
+apt-get -y install nano
+nano /usr/src/app/index.js
+exit
