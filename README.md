@@ -102,6 +102,13 @@ This part covers:
 - Configured WebSocket support for development
 - Set up proper timeouts and buffer sizes
 
+### Exercise 12.20: Containerized Todo Application
+- Containerized the full-stack Todo application with Docker Compose
+- Configured services for frontend, backend, MongoDB, and Redis
+- Set up proper networking and environment variables
+- Ensured data persistence with Docker volumes
+- Verified all services work together correctly
+
 ## Project Structure
 
 ```
@@ -112,26 +119,32 @@ part12-containers-applications/
 │   ├── exercise12_3.txt
 │   └── exercise12_4.txt
 └── todo-app/                # Todo application
-    ├── docker-compose.yml           # Production compose file
-    ├── docker-compose.dev.yml        # Development compose file with Nginx
+    ├── docker-compose.yml           # Main compose file for production
+    ├── docker-compose.dev.yml       # Development overrides
     ├── nginx.dev.conf               # Nginx configuration for development
-    ├── todo-backend/        # Backend service
-    │   ├── Dockerfile       # Production backend Dockerfile
-    │   ├── dev.Dockerfile   # Development backend Dockerfile with Nodemon
-    │   ├── docker-compose.yml
-    │   ├── docker-compose.dev.yml
-    │   ├── mongo/           # MongoDB configuration and initialization
-    │   │   ├── init-mongo.js
-    │   │   └── mongo-seed/
-    │   └── redis/           # Redis configuration
-    │       └── redis.conf
-    └── todo-frontend/       # Frontend application
-        ├── Dockerfile       # Production frontend Dockerfile
-        ├── Dockerfile.dev   # Development frontend Dockerfile
-        ├── nginx.conf       # Nginx production configuration
-        ├── src/             # React source code
-        ├── public/          # Static files
-        └── tests/           # Test files
+    ├── todo-backend/                # Backend service
+    │   ├── Dockerfile               # Production backend image
+    │   ├── dev.Dockerfile           # Development backend with hot-reload
+    │   ├── docker-compose.yml       # Backend-specific compose
+    │   ├── docker-compose.dev.yml   # Backend dev overrides
+    │   ├── mongo/                   # MongoDB initialization scripts
+    │   ├── mongo_data/              # MongoDB persistent data
+    │   ├── redis/                   # Redis configuration
+    │   ├── redis_data/              # Redis persistent data
+    │   ├── routes/                  # API route handlers
+    │   └── util/                    # Utility functions
+    └── todo-frontend/               # Frontend application
+        ├── Dockerfile               # Production frontend build
+        ├── Dockerfile.dev           # Development server
+        ├── nginx.conf               # Production Nginx config
+        ├── vite.config.js           # Vite configuration
+        ├── public/                  # Static assets
+        └── src/                     # React application source
+
+    # Old frontend (kept for reference)
+    └── old-todo-frontend/          # Previous frontend version
+        ├── src/
+        └── public/
 ```
 
 ## Prerequisites
@@ -196,35 +209,32 @@ npm run test:watch
 ## API Endpoints
 
 ### Todo API
-- `GET /todos` - Get all todos
-- `POST /todos` - Create a new todo
+- `GET /api/todos` - Get all todos
+- `POST /api/todos` - Create a new todo
   ```json
   {
     "text": "Todo text",
     "done": false
   }
   ```
-- `GET /todos/:id` - Get a specific todo
-- `PUT /todos/:id` - Update a todo
+- `GET /api/todos/:id` - Get a specific todo
+- `PUT /api/todos/:id` - Update a todo
   ```json
   {
     "text": "Updated text",
     "done": true
   }
   ```
-- `DELETE /todos/:id` - Delete a todo
+- `DELETE /api/todos/:id` - Delete a todo
 
 ### Statistics
-- `GET /statistics` - Get todo statistics (uses Redis)
+- `GET /api/statistics` - Get todo statistics
   ```json
   {
-    "added_todos": 5
+    "total_todos": 5,
+    "completed_todos": 2
   }
   ```
-- `DELETE /todos/:id` - Delete a todo
-
-### Statistics
-- `GET /statistics` - Get todo counter
 
 ## Development
 

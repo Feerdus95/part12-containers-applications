@@ -5,12 +5,11 @@ services:
     build:
       context: ./todo-frontend
       dockerfile: Dockerfile
+      target: production
       args:
         - VITE_BACKEND_URL=/api
     ports:
-      - "3000:80"
-    environment:
-      - VITE_BACKEND_URL=/api
+      - "80:80"
     depends_on:
       - backend
     restart: unless-stopped
