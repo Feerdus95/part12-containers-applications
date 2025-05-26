@@ -109,6 +109,14 @@ This part covers:
 - Ensured data persistence with Docker volumes
 - Verified all services work together correctly
 
+### Exercise 12.21: Containerized Note Application
+- Containerized a full-stack note-taking application with Spring Boot backend and React frontend
+- Set up development environment with hot-reloading for both frontend and backend
+- Configured Nginx as a reverse proxy for development
+- Implemented PostgreSQL database with proper container networking
+- Added environment variables for configuration
+- Created comprehensive development setup with Docker Compose
+
 ## Project Structure
 
 ```
