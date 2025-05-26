@@ -2,13 +2,23 @@
 
 *Last updated: 2025-05-26*
 
-> **Note**: This is a containerized version of the NoteApp created for Full Stack Open 2024 Part 12 - Exercise 12.21. The application features a Spring Boot backend and React frontend, containerized with Docker and orchestrated using Docker Compose.
+> **Note**: This is a production-ready containerized version of the NoteApp created for Full Stack Open 2024 Part 12 - Exercises 12.21 (Development) and 12.22 (Production). The application features a Spring Boot backend and React frontend, containerized with Docker and orchestrated using Docker Compose.
 
 A web application for creating, editing, and organizing notes with categories. Implemented as a Single Page Application (SPA) with a RESTful backend.
 
 ## Project Description
 
-NoteApp is an application that allows users to manage digital notes with the following functionalities:
+NoteApp is a production-ready containerized application that allows users to manage digital notes with the following features:
+
+### Key Production Features
+- **Containerized Architecture**: Fully containerized with Docker and orchestrated using Docker Compose
+- **Multi-stage Builds**: Optimized production images with minimal footprint
+- **Security**: Non-root user execution, minimal base images, and proper isolation
+- **Scalability**: Designed for horizontal scaling with proper state management
+- **Monitoring**: Health checks and logging configured for production use
+- **Performance**: Production-optimized Nginx configuration with caching and compression
+
+### Application Functionality
 
 ### Phase 1 (Implemented)
 - Create, edit, and delete notes
@@ -48,9 +58,11 @@ To run this application you need to have installed:
 - **Java**: JDK 17 (only needed for local backend development)
 - **Maven**: 3.8.0 or higher (or use the included wrapper, only needed for local backend development)
 
-## Development with Docker
+## Getting Started
 
-### Starting the Development Environment
+### Development Environment
+
+For development with hot-reloading and debugging:
 
 1. Make sure Docker and Docker Compose are installed and running
 2. Navigate to the project root directory
@@ -80,7 +92,200 @@ To run this application you need to have installed:
   - Reverse Proxy: Nginx
 - **Environment Variables**: Configured through `docker-compose.dev.yml`
 
-## Production Build
+### Production Deployment
+
+#### Prerequisites
+- Docker 20.10.0 or higher
+- Docker Compose 2.0.0 or higher
+- At least 2GB of free disk space
+- At least 2GB of available RAM
+
+#### Quick Start
+
+1. Clone the repository and navigate to the project directory:
+   ```bash
+   git clone <repository-url>
+   cd containerized-noteapp
+   ```
+
+2. Start the application in production mode:
+   ```bash
+   ./start.sh prod
+   ```
+   Or using Docker Compose directly:
+   ```bash
+   docker-compose up --build -d
+   ```
+
+3. Access the application at http://localhost
+
+4. (Optional) To monitor the application:
+   ```bash
+   # View logs
+   docker-compose logs -f
+
+   # Check container status
+   docker-compose ps
+
+   # View resource usage
+   docker stats
+   ```
+
+#### Stopping the Application
+
+To stop the application while preserving data:
+```bash
+docker-compose down
+```
+
+To stop and remove all data (including database):
+```bash
+docker-compose down -v
+```
+
+#### Updating the Application
+
+1. Pull the latest changes:
+   ```bash
+   git pull origin main
+   ```
+
+2. Rebuild and restart the services:
+   ```bash
+   docker-compose up --build -d
+   ```
+
+#### Backup and Restore
+
+To create a backup of the database:
+```bash
+# Create a backup
+docker exec -t containerized-noteapp-db-1 pg_dump -U noteuser noteapp > backup_$(date +%Y%m%d).sql
+
+# Restore from backup
+cat backup_20250526.sql | docker exec -i containerized-noteapp-db-1 psql -U noteuser -d noteapp
+```
+
+#### Environment Configuration
+
+Create a `.env` file in the project root to customize the production environment. Here's the default configuration:
+
+```env
+# PostgreSQL
+POSTGRES_DB=noteapp
+POSTGRES_USER=noteuser
+POSTGRES_PASSWORD=notepass
+
+# Spring Boot
+SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/noteapp
+SPRING_DATASOURCE_USERNAME=noteuser
+SPRING_DATASOURCE_PASSWORD=notepass
+SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+# Frontend
+VITE_BACKEND_URL=
+
+# Nginx
+NGINX_PORT=80
+NGINX_HOST=0.0.0.0
+
+# Java
+JAVA_OPTS=-Xmx512m -Xms256m
+```
+
+## Architecture Overview
+
+The production environment consists of the following services:
+
+1. **Frontend**: Serves the React application via Nginx
+2. **Backend**: Spring Boot application handling API requests
+3. **Database**: PostgreSQL for data persistence
+4. **Reverse Proxy**: Nginx for routing and SSL termination
+
+### Networking
+
+- Frontend is accessible on port 80
+- Backend API is available at `/api`
+- Database is not exposed externally
+- Internal Docker network isolates services
+
+### Data Persistence
+
+- Database data is stored in a Docker volume (`containerized-noteapp_postgres_data`)
+- Application logs are stored in the container's filesystem by default
+
+## Monitoring and Maintenance
+
+### Logs
+
+View logs for all services:
+```bash
+docker-compose logs -f
+```
+
+View logs for a specific service:
+```bash
+docker-compose logs -f [service_name]
+```
+
+### Health Checks
+
+Check application health:
+```bash
+curl -I http://localhost/health
+```
+
+### Resource Usage
+
+View container resource usage:
+```bash
+docker stats
+```
+
+## Security Considerations
+
+1. **Network Security**:
+   - Only necessary ports are exposed
+   - Internal services are not accessible from outside the Docker network
+
+2. **Application Security**:
+   - Running as non-root user in containers
+   - Regular security updates for base images
+   - Proper CORS and security headers
+
+3. **Data Security**:
+   - Database credentials are passed via environment variables
+   - Sensitive data is not hardcoded in configuration files
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Port Conflicts**:
+   - Ensure ports 80 and 5432 are not in use
+   - Check running containers: `docker ps`
+
+2. **Database Issues**:
+   - Check if PostgreSQL is running: `docker-compose ps db`
+   - View database logs: `docker-compose logs db`
+
+3. **Application Not Starting**:
+   - Check logs: `docker-compose logs`
+   - Verify environment variables are set correctly
+
+4. **Nginx 502 Bad Gateway**:
+   - Check if backend is running: `docker-compose ps backend`
+   - Verify Nginx config: `docker-compose exec nginx nginx -t`
+
+### Getting Help
+
+If you encounter any issues, please check the following:
+1. Docker and Docker Compose are installed and running
+2. All required ports are available
+3. Sufficient system resources are available
+4. Logs for error messages
+
+For additional support, please open an issue in the project repository.
 
 To build and run the production version:
 

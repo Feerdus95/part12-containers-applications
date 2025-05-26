@@ -15,20 +15,27 @@ COPY . .
 
 
 # Build the application
-ENV VITE_BACKEND_URL=/api
+# Using empty string as Nginx will handle the /api prefix
+ENV VITE_BACKEND_URL=
 RUN npm run build
 
-# Production stage
-FROM nginx:1.25-alpine
+# Final stage - just copy the built files
+FROM alpine:latest
 
-# Copy the built app from build stage to nginx html directory
-COPY --from=build /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-# Copy custom nginx config if needed
-# COPY nginx-custom.conf /etc/nginx/conf.d/default.conf
+# Copy built files from build stage
+COPY --from=build /app/dist ./dist
 
-# Expose port 80
-EXPOSE 80
+# This is a minimal image that just holds the built files
+# The actual serving will be done by the nginx service
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Create a non-root user to own the files
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
+    chown -R appuser:appgroup /app
+
+USER appuser
+
+# The command is just a simple sleep to keep the container running
+# In production, this would be served by the nginx service
+CMD ["sh", "-c", "echo 'Frontend build complete. This container is not meant to be run directly.' && tail -f /dev/null"]

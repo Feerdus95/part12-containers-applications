@@ -109,13 +109,23 @@ This part covers:
 - Ensured data persistence with Docker volumes
 - Verified all services work together correctly
 
-### Exercise 12.21: Containerized Note Application
+### Exercise 12.21: Containerized Note Application (Development)
 - Containerized a full-stack note-taking application with Spring Boot backend and React frontend
 - Set up development environment with hot-reloading for both frontend and backend
 - Configured Nginx as a reverse proxy for development
 - Implemented PostgreSQL database with proper container networking
 - Added environment variables for configuration
 - Created comprehensive development setup with Docker Compose
+
+### Exercise 12.22: Containerized Note Application (Production)
+- Created production-ready Dockerfiles for both frontend and backend
+- Configured Nginx for production with optimized settings
+- Set up proper container orchestration with Docker Compose
+- Implemented health checks and proper container lifecycle management
+- Configured environment-specific settings for production
+- Ensured proper security practices (non-root users, minimal images)
+- Set up proper volume management for persistent data
+- Verified all services work together in production configuration
 
 ## Project Structure
 
@@ -163,7 +173,40 @@ part12-containers-applications/
 
 ## Getting Started
 
-### Production
+### Production (Todo App Example)
+
+1. Navigate to the todo-app directory:
+   ```bash
+   cd todo-app
+   ```
+
+2. Start the application:
+   ```bash
+   docker-compose up --build -d
+   ```
+
+3. Access the application at http://localhost
+
+### Production (Note App Example)
+
+1. Navigote to the containerized-noteapp directory:
+   ```bash
+   cd containerized-noteapp
+   ```
+
+2. Start the application:
+   ```bash
+   ./start.sh prod
+   ```
+   
+   Or use Docker Compose directly:
+   ```bash
+   docker-compose up --build -d
+   ```
+
+3. Access the application at http://localhost
+
+### Development
 
 1. Clone this repository
    ```bash
