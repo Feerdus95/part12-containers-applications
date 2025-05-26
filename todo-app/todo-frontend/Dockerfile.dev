@@ -1,5 +1,5 @@
 # Development stage
-FROM node:20
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
@@ -16,5 +16,9 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Start the development server
-CMD ["npm", "run", "dev"]
+# Set environment variables
+ENV NODE_ENV=development
+ENV VITE_BACKEND_URL=/api
+
+# Start the development server with host 0.0.0.0 for Docker
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

@@ -1,5 +1,24 @@
 
 services:
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - todo-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
   frontend:
     build:
       context: ./todo-frontend
@@ -7,11 +26,11 @@ services:
     volumes:
       - ./todo-frontend:/app
       - /app/node_modules
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=development
-      - VITE_BACKEND_URL=/api  # Will be proxied by Vite
+      - VITE_BACKEND_URL=/api
     container_name: todo-frontend-dev
     stdin_open: true
     tty: true
@@ -24,14 +43,15 @@ services:
     build:
       context: ./todo-backend
       dockerfile: dev.Dockerfile
-    ports:
-      - "3001:3001"
+    expose:
+      - "3001"
     environment:
       - NODE_ENV=development
       - MONGO_URL=mongodb://the_username:the_password@mongo:27017/the_database
       - REDIS_URL=redis://redis:6379
       - PORT=3001
-      - CORS_ORIGIN=http://localhost:3000
+      - CORS_ORIGIN=http://localhost,http://localhost:80,http://frontend:3000
+      - TRUST_PROXY=loopback,linklocal,uniquelocal
       - DEBUG=*
     volumes:
       - ./todo-backend:/usr/src/app
@@ -39,16 +59,13 @@ services:
     working_dir: /usr/src/app
     networks:
       - todo-network
-    # Temporarily remove healthcheck dependencies for debugging
     depends_on:
       - mongo
       - redis
-    # Add a command to keep the container running for debugging
     command: >
       sh -c "
         echo 'Starting backend service...' &&
-        ls -la /usr/src/app &&
-        nodemon --legacy-watch ./bin/www || sleep infinity
+        nodemon --legacy-watch ./bin/www
       "
 
   mongo:

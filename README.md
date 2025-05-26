@@ -94,25 +94,27 @@ This part covers:
 - Configured Vite proxy for API requests in development
 - Added proper networking between containers
 
-### Exercise 12.16: Backend Development with Nodemon
-- Set up Nodemon for backend hot-reloading in development
-- Updated docker-compose.dev.yml with Nodemon configuration
-- Added health checks for MongoDB and Redis
-- Documented development setup in README
-- Ensured proper container networking and persistence
+### Exercise 12.17-12.19: Nginx Reverse Proxy
+- Set up Nginx as a reverse proxy for the application
+- Configured routing for frontend and backend services
+- Updated frontend to work with the reverse proxy
+- Added proper request/response handling with necessary headers
+- Configured WebSocket support for development
+- Set up proper timeouts and buffer sizes
 
 ## Project Structure
 
 ```
 part12-containers-applications/
-├── script-answers/          # Exercise solution files
+├── script-answers/       # Exercise solution files
 │   ├── exercise12_1.txt
 │   ├── exercise12_2.txt
 │   ├── exercise12_3.txt
 │   └── exercise12_4.txt
 └── todo-app/                # Todo application
     ├── docker-compose.yml           # Production compose file
-    ├── docker-compose.dev.yml        # Development compose file
+    ├── docker-compose.dev.yml        # Development compose file with Nginx
+    ├── nginx.dev.conf               # Nginx configuration for development
     ├── todo-backend/        # Backend service
     │   ├── Dockerfile       # Production backend Dockerfile
     │   ├── dev.Dockerfile   # Development backend Dockerfile with Nodemon
@@ -126,34 +128,17 @@ part12-containers-applications/
     └── todo-frontend/       # Frontend application
         ├── Dockerfile       # Production frontend Dockerfile
         ├── Dockerfile.dev   # Development frontend Dockerfile
-        ├── nginx.conf       # Nginx configuration
+        ├── nginx.conf       # Nginx production configuration
         ├── src/             # React source code
         ├── public/          # Static files
-        ├── tests/           # Test files
-        └── vite.config.js   # Vite configuration
+        └── tests/           # Test files
 ```
 
 ## Prerequisites
 
 - Docker and Docker Compose installed
 - Basic command line knowledge
-- Node.js (for local development)
-- Git (for version control)
-
-## Environment Variables
-
-The following environment variables are used in the application:
-
-### Backend
-- `NODE_ENV`: Application environment (development/production)
-- `PORT`: Port for the backend server (default: 3001)
-- `MONGO_URL`: MongoDB connection string
-- `REDIS_URL`: Redis connection string
-- `CORS_ORIGIN`: Allowed CORS origins (e.g., http://localhost:3000)
-
-### Frontend
-- `VITE_API_URL`: Backend API URL (default: http://localhost:3001)
-- `NODE_ENV`: Application environment (development/production)
+- Node.js (for development)
 
 ## Getting Started
 
@@ -171,33 +156,26 @@ The following environment variables are used in the application:
    ```
 
 3. Access the application:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3001
+   - Frontend: http://localhost
+   - Backend API: http://localhost/api
    - MongoDB: localhost:27017
    - Redis: localhost:6379
+   - Health Check: http://localhost/health
 
 ### Development
 
 1. Start the development environment:
    ```bash
-   # From the todo-app directory
    docker-compose -f docker-compose.dev.yml up --build
    ```
 
 2. The development environment includes:
-   - Frontend with Vite hot-reloading: http://localhost:3000
-   - Backend API with Nodemon: http://localhost:3001
-   - MongoDB: localhost:27017
-   - Redis: localhost:6379
-   - Health checks for MongoDB and Redis
+   - Nginx reverse proxy on port 80
+   - Frontend with hot-reloading: http://localhost
+   - Backend API: http://localhost/api
+   - Debug helper for testing connectivity between services
+   - WebSocket support for development
    - Volume mounts for live code updates
-
-3. Development features:
-   - Automatic backend restart on file changes using Nodemon
-   - Frontend hot module replacement (HMR)
-   - Debug helper for testing service connectivity
-   - Proper CORS and CSP headers for development
-   - Separate development Dockerfiles and configurations
 
 ### Testing
 
@@ -214,15 +192,6 @@ docker-compose up --build
 cd todo-frontend
 npm run test:watch
 ```
-
-## Health Checks
-
-The application includes health checks for critical services:
-
-- **MongoDB Health Check**: Verifies MongoDB connection
-- **Redis Health Check**: Verifies Redis connection
-
-These health checks are automatically used by Docker Compose to ensure services are ready before the application starts.
 
 ## API Endpoints
 
@@ -259,9 +228,12 @@ These health checks are automatically used by Docker Compose to ensure services 
 
 ## Development
 
-- Backend runs on port 3000
-- MongoDB is available on port 3456
+- Nginx reverse proxy runs on port 80
+- Backend API is available at /api
+- Frontend is served from the root path
+- MongoDB is available on port 27017
 - Redis runs on port 6379
+- Health check endpoint at /health
 
 ## Resources
 
